@@ -1,9 +1,13 @@
 import { FC, useEffect, useState } from 'react';
-import Loader from '../../components/Loader';
-import useGetProductList, { ProductItem } from '../../services/get-product-list';
-import ProductCard from './components/ProductCard';
+import { useParams } from 'react-router-dom';
+import Loader from '../../../components/Loader';
+import { ProductItem } from '../../../services/get-product-list';
+import useGetProductListByCategory from '../../../services/get-product-list-by-category';
+import ProductCard from '../components/ProductCard';
 
-const ProductList: FC = () => {
+const ProductListByCategory: FC = () => {
+  const { id } = useParams<Record<'id', string>>();
+
   const [cartList, setCartList] = useState<number[]>([]);
 
   const {
@@ -13,11 +17,13 @@ const ProductList: FC = () => {
     isFetchingNextPage,
     isFetching,
     isFetched,
-  } = useGetProductList({
+  } = useGetProductListByCategory({
+    category: id || '',
     limit: '16',
     skip: '0',
   }, {
     staleTime: 600000,
+    enabled: Boolean(id),
   });
 
   const combinedProductList = [
@@ -43,6 +49,10 @@ const ProductList: FC = () => {
 
   return (isFetching && !isFetched) ? <Loader /> : (
     <div className="mx-auto max-w-2xl lg:max-w-7xl">
+      <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+        Category: {id}
+      </h2>
+
       <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
         {combinedProductList?.map((product) => (
           <ProductCard
@@ -60,10 +70,11 @@ const ProductList: FC = () => {
             onAddToCart={productId => setCartList(prevList => [...prevList, productId])}
           />
         ))}
+
         {isFetchingNextPage && <Loader />}
       </div>
     </div>
   );
 };
 
-export default ProductList;
+export default ProductListByCategory;

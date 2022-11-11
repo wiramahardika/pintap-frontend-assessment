@@ -4,6 +4,7 @@ import Loader from "./components/Loader";
 import MainLayout from "./layout/main";
 
 const ProductList = lazy(() => import('./pages/products'));
+const ProductListByCategory = lazy(() => import('./pages/products/category'));
 const Cart = lazy(() => import('./pages/cart'));
 
 const AppRoutes: FC = () => {
@@ -16,6 +17,14 @@ const AppRoutes: FC = () => {
             element={(
               <Suspense fallback={<Loader />}>
                 <ProductList />
+              </Suspense>
+            )}
+          />
+          <Route
+            path="category/:id"
+            element={(
+              <Suspense fallback={<Loader />}>
+                <ProductListByCategory />
               </Suspense>
             )}
           />
